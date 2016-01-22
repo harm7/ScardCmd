@@ -459,6 +459,15 @@
                 <event name="OnSize"></event>
                 <event name="OnUpdateUI"></event>
             </object>
+            <object class="wxTimer" expanded="1">
+                <property name="enabled">1</property>
+                <property name="id">wxID_ANY</property>
+                <property name="name">timRdrRefresh</property>
+                <property name="oneshot">0</property>
+                <property name="period">500</property>
+                <property name="permission">protected</property>
+                <event name="OnTimer">evtRdrRefresh</event>
+            </object>
         </object>
     </object>
 </wxFormBuilder_Project>

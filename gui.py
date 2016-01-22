@@ -28,8 +28,8 @@ class frmMain ( wx.Frame ):
 		
 		bSizer2.Add( self.treeReaders, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.txtLog = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE | wx.TE_RICH2 |wx.ALWAYS_SHOW_SB|wx.VSCROLL )
-		self.txtLog.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Courier" ) )
+		self.txtLog = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.ALWAYS_SHOW_SB|wx.VSCROLL|wx.TE_RICH2 )
+		self.txtLog.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "System" ) )
 		
 		bSizer2.Add( self.txtLog, 1, wx.ALL|wx.EXPAND, 5 )
 		
@@ -43,12 +43,17 @@ class frmMain ( wx.Frame ):
 		self.m_toolBar1 = self.CreateToolBar( wx.TB_HORIZONTAL, wx.ID_ANY ) 
 		self.m_toolBar1.Realize() 
 		
+		self.timRdrRefresh = wx.Timer()
+		self.timRdrRefresh.SetOwner( self, wx.ID_ANY )
+		self.timRdrRefresh.Start( 500 )
+		
 		
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
 		self.treeReaders.Bind( wx.EVT_TREE_ITEM_ACTIVATED, self.evtOpenReader )
 		self.txtLog.Bind( wx.EVT_KEY_DOWN, self.evtLogKeyDown )
+		self.Bind( wx.EVT_TIMER, self.evtRdrRefresh, id=wx.ID_ANY )
 	
 	def __del__( self ):
 		pass
@@ -59,6 +64,9 @@ class frmMain ( wx.Frame ):
 		event.Skip()
 	
 	def evtLogKeyDown( self, event ):
+		event.Skip()
+	
+	def evtRdrRefresh( self, event ):
 		event.Skip()
 	
 

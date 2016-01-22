@@ -20,13 +20,13 @@ class fMain(gui.frmMain):
     def __init__(self, parent):
         gui.frmMain.__init__(self, parent)
         self.card = None
+        self.reader_list = None
         self.history = []
         self.history_index = 0
         self.lastpos = 0
-        root = self.treeReaders.AddRoot("PCSC")
-        for r in readers():
-            self.treeReaders.AppendItem(root, str(r))
-        self.treeReaders.ExpandAll()
+        font1 = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+        self.txtLog.SetFont(font1)
+        self.evtRdrRefresh(None)
 
     def evtOpenReader(self, event):
         if self.card:
@@ -59,10 +59,12 @@ class fMain(gui.frmMain):
                 if sw1 == 0x61:
                     data, sw1, sw2 = self.card.transmit([0x00, 0xC0, 0x00, 0x00, sw2])
                 self.txtLog.SetDefaultStyle(wx.TextAttr('BROWN'))
-                self.txtLog.AppendText("\n> Data:\n")
-                for octet in [data[i: i+8] for i in xrange(0, len(data), 8)]:
-                    txtform = ''.join(map(logchr, octet))
-                    self.txtLog.AppendText(toHexString(octet) + "    " + txtform + "\n")
+                if data:
+                    self.txtLog.AppendText("> Data:\n")
+                    for octet in [data[i: i+8] for i in xrange(0, len(data), 8)]:
+                        txtform = ''.join(map(logchr, octet))
+                        txtform = "{0}{1}{2}\n".format(toHexString(octet), ' '*((8-len(octet))*3+5), txtform)
+                        self.txtLog.AppendText(txtform)
                 self.txtLog.SetDefaultStyle(wx.TextAttr('BLUE'))
                 self.txtLog.AppendText("> SW: " + toHexString([sw1, sw2]) + "\n\n")
                 self.txtLog.SetDefaultStyle(wx.TextAttr('BLACK'))
@@ -90,6 +92,15 @@ class fMain(gui.frmMain):
             event.Skip()
             return
 
+    def evtRdrRefresh(self, event):
+        rlist = readers()
+        if self.reader_list != rlist:
+            self.reader_list = rlist
+            self.treeReaders.DeleteAllItems()
+            root = self.treeReaders.AddRoot("PCSC")
+            for r in rlist:
+                self.treeReaders.AppendItem(root, str(r))
+            self.treeReaders.ExpandAll()
 
 app = wx.App()
 frame = fMain(None)
