@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 
 ###########################################################################
-## Python code generated with wxFormBuilder (version Jun 17 2015)
+## Python code generated with wxFormBuilder (version Jun  5 2014)
 ## http://www.wxformbuilder.org/
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
@@ -28,7 +28,9 @@ class frmMain ( wx.Frame ):
 		
 		bSizer2.Add( self.treeReaders, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.txtLog = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.ALWAYS_SHOW_SB|wx.VSCROLL )
+		self.txtLog = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE | wx.TE_RICH2 |wx.ALWAYS_SHOW_SB|wx.VSCROLL )
+		self.txtLog.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Courier" ) )
+		
 		bSizer2.Add( self.txtLog, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		

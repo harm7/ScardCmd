@@ -1,9 +1,19 @@
+# -*- coding: utf-8 -*- 
 __author__ = 'harm7'
 
 import wx
 import gui
+import string
 from smartcard.System import *
 from smartcard.util import toHexString
+from smartcard import Exceptions
+
+
+def logchr(c):
+    if chr(c) in string.printable:
+        return chr(c)
+    else:
+        return '.'
 
 
 class fMain(gui.frmMain):
@@ -32,7 +42,7 @@ class fMain(gui.frmMain):
 
     def evtLogKeyDown(self, event):
         code = event.GetKeyCode()
-        if wx.WXK_RETURN == code:
+        if wx.WXK_RETURN == code or wx.WXK_NUMPAD_ENTER == code:
             linenum = len(self.txtLog.GetRange(0, self.txtLog.GetInsertionPoint()).split("\n"))
             linetext = self.txtLog.GetLineText(linenum-1)
             self.history.append(linetext)
@@ -40,14 +50,22 @@ class fMain(gui.frmMain):
             cmd = map(ord, linetext.decode('hex'))
             self.txtLog.AppendText('\n')
             if self.card:
-                data, sw1, sw2 = self.card.transmit(cmd)
+                try:
+                    data, sw1, sw2 = self.card.transmit(cmd)
+                except Exceptions.CardConnectionException as ex:
+                    self.txtLog.SetDefaultStyle(wx.TextAttr('RED'))
+                    self.txtLog.AppendText("{0}\n\n".format(ex.message))
+                    self.txtLog.SetDefaultStyle(wx.TextAttr('BLACK'))
                 if sw1 == 0x61:
                     data, sw1, sw2 = self.card.transmit([0x00, 0xC0, 0x00, 0x00, sw2])
-                self.txtLog.SetForegroundColour('DARK GOLDENROD')
-                self.txtLog.AppendText("\n> Data: " + toHexString(data) + "\n")
-                self.txtLog.SetForegroundColour('BLUE')
+                self.txtLog.SetDefaultStyle(wx.TextAttr('BROWN'))
+                self.txtLog.AppendText("\n> Data:\n")
+                for octet in [data[i: i+8] for i in xrange(0, len(data), 8)]:
+                    txtform = ''.join(map(logchr, octet))
+                    self.txtLog.AppendText(toHexString(octet) + "    " + txtform + "\n")
+                self.txtLog.SetDefaultStyle(wx.TextAttr('BLUE'))
                 self.txtLog.AppendText("> SW: " + toHexString([sw1, sw2]) + "\n\n")
-                self.txtLog.SetForegroundColour('BLACK')
+                self.txtLog.SetDefaultStyle(wx.TextAttr('BLACK'))
             self.lastpos = self.txtLog.GetLastPosition()
         elif wx.WXK_UP == code:
             if not len(self.history):
